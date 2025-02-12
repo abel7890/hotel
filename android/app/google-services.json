@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "524777499100",
+    "project_id": "project-bd33c",
+    "storage_bucket": "project-bd33c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:524777499100:android:e658ec40191fae8dc54719",
+        "android_client_info": {
+          "package_name": "com.example.hotel"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAg-euvF5YDMoar8F03PZvALwXhSGKfDWo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
