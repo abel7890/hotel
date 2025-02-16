@@ -48,125 +48,173 @@ class _UserDashboardPageState extends State<UserDashboardPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          "User Dashboard",
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.book_online, color: Color.fromARGB(255, 0, 0, 0)),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const ReservationStatusPage()),
-              );
-            },
+          "Luxury Hotel",
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
           ),
-        
-          IconButton(
-            icon: const Icon(Icons.feedback, color: Color.fromARGB(255, 0, 0, 0)),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const FeedbackPage()),
-              );
-            },
+        ),
+        backgroundColor: Colors.black,
+        elevation: 2,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: TextButton.icon(
+              icon: const Icon(Icons.book_online, color: Colors.white),
+              label: const Text(
+                'Reservations',
+                style: TextStyle(color: Colors.white),
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ReservationStatusPage()),
+                );
+              },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: TextButton.icon(
+              icon: const Icon(Icons.feedback, color: Colors.white),
+              label: const Text(
+                'Feedback',
+                style: TextStyle(color: Colors.white),
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const FeedbackPage()),
+                );
+              },
+            ),
           ),
         ],
       ),
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF00C6FF), Color(0xFF0072FF)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
+        color: Colors.white,
+        child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                "Available Rooms",
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-              const SizedBox(height: 10),
-
-              // Dropdown with new styling
+              // Welcome Banner
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: DropdownButton<String>(
-                  value: selectedRoomType,
-                  isExpanded: true,
-                  underline: const SizedBox(),
-                  items: const [
-                    DropdownMenuItem(value: 'All', child: Text('All')),
-                    DropdownMenuItem(value: 'Deluxe', child: Text('Deluxe')),
-                    DropdownMenuItem(value: 'Standard', child: Text('Standard')),
-                    DropdownMenuItem(value: 'Economy', child: Text('Economy')),
-                 
+                width: double.infinity,
+                padding: const EdgeInsets.all(24.0),
+                color: Colors.black,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: const [
+                    Text(
+                      "Welcome to Luxury Hotel",
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    SizedBox(height: 12),
+                    Text(
+                      "Experience unparalleled luxury and comfort with our premium services:",
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white70,
+                      ),
+                    ),
+                    SizedBox(height: 16),
+                    ServicesList(),
                   ],
-                  onChanged: (value) {
-                    setState(() {
-                      selectedRoomType = value!;
-                    });
-                  },
-                  hint: const Text('Select Room Type'),
                 ),
               ),
-              const SizedBox(height: 10),
+              
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Available Rooms",
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    
+                    // Room Type Dropdown
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.black),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: DropdownButton<String>(
+                        value: selectedRoomType,
+                        isExpanded: true,
+                        underline: const SizedBox(),
+                        items: const [
+                          DropdownMenuItem(value: 'All', child: Text('All Rooms')),
+                          DropdownMenuItem(value: 'Deluxe', child: Text('Deluxe')),
+                          DropdownMenuItem(value: 'Standard', child: Text('Standard')),
+                          DropdownMenuItem(value: 'Economy', child: Text('Economy')),
+                        ],
+                        onChanged: (value) {
+                          setState(() {
+                            selectedRoomType = value!;
+                          });
+                        },
+                      ),
+                    ),
+                    
+                    const SizedBox(height: 16),
+                    
+                    // Room List
+                    StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance.collection('rooms').snapshots(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const Center(child: CircularProgressIndicator(
+                            color: Colors.black,
+                          ));
+                        }
 
-              // Room List
-              Expanded(
-                child: StreamBuilder<QuerySnapshot>(
-                  stream: FirebaseFirestore.instance.collection('rooms').snapshots(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
+                        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                          return const Center(
+                            child: Text(
+                              "No rooms available",
+                              style: TextStyle(color: Colors.black),
+                            ),
+                          );
+                        }
 
-                    if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                      return const Center(
-                        child: Text(
-                          "No rooms available",
-                          style: TextStyle(color: Colors.white, fontSize: 16),
-                        ),
-                      );
-                    }
+                        final filteredRooms = selectedRoomType == 'All'
+                            ? snapshot.data!.docs
+                            : snapshot.data!.docs.where((doc) =>
+                                (doc.data() as Map<String, dynamic>)['type'] == selectedRoomType).toList();
 
-                    final filteredRooms = selectedRoomType == 'All'
-                        ? snapshot.data!.docs
-                        : snapshot.data!.docs.where((doc) =>
-                            (doc.data() as Map<String, dynamic>)['type'] == selectedRoomType).toList();
-
-                    return ListView.builder(
-                      itemCount: filteredRooms.length,
-                      itemBuilder: (context, index) {
-                        final room = filteredRooms[index].data() as Map<String, dynamic>;
-
-                        return RoomCard(
-                          roomData: room,
-                          onBookNow: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => BookingFormPage(roomData: room),
-                              ),
+                        return ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: filteredRooms.length,
+                          itemBuilder: (context, index) {
+                            final room = filteredRooms[index].data() as Map<String, dynamic>;
+                            return RoomCard(
+                              roomData: room,
+                              onBookNow: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => BookingFormPage(roomData: room),
+                                  ),
+                                );
+                              },
                             );
                           },
                         );
                       },
-                    );
-                  },
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -177,6 +225,54 @@ class _UserDashboardPageState extends State<UserDashboardPage> {
   }
 }
 
+class ServicesList extends StatelessWidget {
+  const ServicesList({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: const [
+        ServiceItem(icon: Icons.room_service, text: "24/7 Room Service"),
+        ServiceItem(icon: Icons.wifi, text: "High-Speed WiFi"),
+        ServiceItem(icon: Icons.local_parking, text: "Complimentary Parking"),
+        ServiceItem(icon: Icons.fitness_center, text: "Fitness Center"),
+        ServiceItem(icon: Icons.pool, text: "Swimming Pool"),
+      ],
+    );
+  }
+}
+
+class ServiceItem extends StatelessWidget {
+  final IconData icon;
+  final String text;
+
+  const ServiceItem({
+    Key? key,
+    required this.icon,
+    required this.text,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        children: [
+          Icon(icon, color: Colors.white, size: 20),
+          const SizedBox(width: 8),
+          Text(
+            text,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 14,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
 // Room Card with enhanced UI
 class RoomCard extends StatelessWidget {
   final Map<String, dynamic> roomData;
@@ -191,8 +287,12 @@ class RoomCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 5,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      elevation: 3,
+      color: Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+        side: const BorderSide(color: Colors.black12, width: 1),
+      ),
       margin: const EdgeInsets.symmetric(vertical: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -200,16 +300,34 @@ class RoomCard extends StatelessWidget {
           // Room Image with rounded corners
           ClipRRect(
             borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
-            child: Image.network(
-              roomData['image'],
-              height: 160,
-              width: double.infinity,
-              fit: BoxFit.cover,
+            child: Stack(
+              children: [
+                Image.network(
+                  roomData['image'],
+                  height: 160,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
+                // Optional: Add a subtle gradient overlay
+                Container(
+                  height: 160,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.transparent,
+                        Colors.black.withOpacity(0.2),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
 
           Padding(
-            padding: const EdgeInsets.all(12.0),
+            padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -217,49 +335,59 @@ class RoomCard extends StatelessWidget {
                 Text(
                   roomData['type'],
                   style: const TextStyle(
-                    fontSize: 18,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Colors.indigo,
+                    color: Colors.black,
+                    letterSpacing: 0.5,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 8),
 
                 // Room Description
                 Text(
                   roomData['description'],
-                  style: const TextStyle(fontSize: 14, color: Colors.black54),
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.black54,
+                    height: 1.4,
+                  ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 12),
 
                 // Room Price
                 Text(
                   '₹${roomData['price']} / night',
                   style: const TextStyle(
-                    fontSize: 16,
+                    fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: Colors.green,
+                    color: Colors.black87,
                   ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 16),
 
-                // Book Now Button with stylish gradient
+                // Book Now Button
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: onBookNow,
                     style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      backgroundColor: Colors.black,
+                      foregroundColor: Colors.white,
+                      elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      backgroundColor: Colors.blueAccent,
-                      elevation: 5,
                     ),
                     child: const Text(
                       'Book Now',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 0.5,
+                      ),
                     ),
                   ),
                 ),
@@ -271,7 +399,6 @@ class RoomCard extends StatelessWidget {
     );
   }
 }
-
 
 class BookingFormPage extends StatefulWidget {
   final Map<String, dynamic> roomData;
@@ -287,13 +414,31 @@ class _BookingFormPageState extends State<BookingFormPage> {
   final TextEditingController fullNameController = TextEditingController();
   final TextEditingController ageController = TextEditingController();
   final TextEditingController addressController = TextEditingController();
+  final TextEditingController checkInDateController = TextEditingController();
 
   double totalPrice = 0.0;
   File? _idProofImage;
   Uint8List? _webIdProofImage;
   bool isUploading = false;
 
-  // Calculate the total price
+  // Theme constants
+  final mainTextStyle = const TextStyle(color: Colors.black87);
+  final headingStyle = const TextStyle(
+    fontSize: 18,
+    fontWeight: FontWeight.bold,
+    color: Colors.black,
+  );
+  final inputDecorationTheme = const InputDecorationTheme(
+    border: OutlineInputBorder(
+      borderSide: BorderSide(color: Colors.black),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderSide: BorderSide(color: Colors.black, width: 2),
+    ),
+    labelStyle: TextStyle(color: Colors.black54),
+    floatingLabelStyle: TextStyle(color: Colors.black),
+  );
+
   void _calculateTotalPrice() {
     final duration = int.tryParse(durationController.text) ?? 0;
     final roomPrice = double.tryParse(widget.roomData['price'].toString()) ?? 0.0;
@@ -303,7 +448,6 @@ class _BookingFormPageState extends State<BookingFormPage> {
     });
   }
 
-  // Pick an image using ImagePicker
   Future<void> _pickIdProofImage() async {
     final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
@@ -320,7 +464,6 @@ class _BookingFormPageState extends State<BookingFormPage> {
     }
   }
 
-  // Upload the ID proof image to Firebase Storage
   Future<String?> _uploadIdProofImage() async {
     if (_idProofImage == null && _webIdProofImage == null) return null;
 
@@ -343,12 +486,14 @@ class _BookingFormPageState extends State<BookingFormPage> {
     }
   }
 
-  // Confirm Booking method
   Future<void> _confirmBooking() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("You must be logged in to book a room.")),
+        const SnackBar(
+          content: Text("You must be logged in to book a room."),
+          backgroundColor: Colors.black87,
+        ),
       );
       return;
     }
@@ -356,32 +501,48 @@ class _BookingFormPageState extends State<BookingFormPage> {
     if (fullNameController.text.isNotEmpty &&
         ageController.text.isNotEmpty &&
         addressController.text.isNotEmpty &&
-        durationController.text.isNotEmpty) {
+        durationController.text.isNotEmpty &&
+        checkInDateController.text.isNotEmpty) {
       final idProofUrl = await _uploadIdProofImage();
 
+      // Create the booking data
+      final bookingData = {
+        'userId': user.uid,
+        'userName': fullNameController.text,
+        'userAge': ageController.text,
+        'userAddress': addressController.text,
+        'roomType': widget.roomData['type'],
+        'description': widget.roomData['description'],
+        'price': widget.roomData['price'],
+        'duration': durationController.text,
+        'totalPrice': totalPrice,
+        'checkInDate': checkInDateController.text,  // Verify this is not empty
+        'idProofUrl': idProofUrl ?? '',
+        'status': 'Pending',
+        'createdAt': FieldValue.serverTimestamp(),
+      };
+
+      // Print the data to verify
+      print('Attempting to store booking data: $bookingData');
+
       try {
-        await FirebaseFirestore.instance.collection('bookings').add({
-          'userId': user.uid,
-          'userName': fullNameController.text,
-          'userAge': ageController.text,
-          'userAddress': addressController.text,
-          'roomType': widget.roomData['type'],
-          'description': widget.roomData['description'],
-          'price': widget.roomData['price'],
-          'duration': durationController.text,
-          'totalPrice': totalPrice,
-          'idProofUrl': idProofUrl ?? '',
-          'status': 'Pending',
-          'createdAt': FieldValue.serverTimestamp(),
-        });
+        final docRef = await FirebaseFirestore.instance.collection('bookings').add(bookingData);
+        print('Document written with ID: ${docRef.id}');
 
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Booking Successful!")),
+          const SnackBar(
+            content: Text("Booking Successful!"),
+            backgroundColor: Colors.black87,
+          ),
         );
         Navigator.pop(context);
       } catch (e) {
+        print('Error storing booking: $e');  // Detailed error logging
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Booking failed: $e")),
+          SnackBar(
+            content: Text("Booking failed: $e"),
+            backgroundColor: Colors.black87,
+          ),
         );
       } finally {
         setState(() {
@@ -389,44 +550,143 @@ class _BookingFormPageState extends State<BookingFormPage> {
         });
       }
     } else {
+      // Print values to see what's missing
+      print('Form validation failed:');
+      print('Name: ${fullNameController.text}');
+      print('Age: ${ageController.text}');
+      print('Address: ${addressController.text}');
+      print('Duration: ${durationController.text}');
+      print('Check-in Date: ${checkInDateController.text}');
+
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please fill in all fields")),
+        const SnackBar(
+          content: Text("Please fill in all fields, including check-in date"),
+          backgroundColor: Colors.black87,
+        ),
       );
     }
-  }
+}
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Room Booking"),
+    return Theme(
+      data: ThemeData(
+        scaffoldBackgroundColor: Colors.white,
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.black,
+          foregroundColor: Colors.white,
+          elevation: 0,
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.black,
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+        ),
+        inputDecorationTheme: inputDecorationTheme,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text("Room: ${widget.roomData['type']}", style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              Text("Description: ${widget.roomData['description']}"),
-              Text("Price per night: ₹${widget.roomData['price']}"),
-              const SizedBox(height: 20),
-              const Text("Enter Duration (in nights):"),
-              TextField(controller: durationController, keyboardType: TextInputType.number, onChanged: (_) => _calculateTotalPrice()),
-              Text("Total Price: ₹$totalPrice", style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              const Text("Personal Details", style: TextStyle(fontWeight: FontWeight.bold)),
-              TextField(controller: fullNameController, decoration: const InputDecoration(labelText: "Full Name")),
-              TextField(controller: ageController, decoration: const InputDecoration(labelText: "Age")),
-              TextField(controller: addressController, decoration: const InputDecoration(labelText: "Address")),
-              const SizedBox(height: 20),
-              SizedBox(width: double.infinity, child: ElevatedButton(
-                onPressed: () async {
-                  setState(() { isUploading = true; });
-                  await _confirmBooking();
-                },
-                child: isUploading ? const CircularProgressIndicator(color: Colors.white) : const Text("Confirm Booking"),
-              )),
-            ],
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text("Room Booking"),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Room: ${widget.roomData['type']}",
+                  style: headingStyle,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  "Description: ${widget.roomData['description']}",
+                  style: mainTextStyle,
+                ),
+                Text(
+                  "Price per night: ₹${widget.roomData['price']}",
+                  style: mainTextStyle,
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  "Enter Check-in Date (DD/MM/YYYY):",
+                  style: mainTextStyle,
+                ),
+                const SizedBox(height: 8),
+                TextField(
+                  controller: checkInDateController,
+                  decoration: const InputDecoration(
+                    hintText: "DD/MM/YYYY",
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  "Enter Duration (in nights):",
+                  style: mainTextStyle,
+                ),
+                const SizedBox(height: 8),
+                TextField(
+                  controller: durationController,
+                  keyboardType: TextInputType.number,
+                  onChanged: (_) => _calculateTotalPrice(),
+                  decoration: const InputDecoration(
+                    hintText: "Number of nights",
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  "Total Price: ₹$totalPrice",
+                  style: headingStyle,
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  "Personal Details",
+                  style: headingStyle,
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: fullNameController,
+                  decoration: const InputDecoration(labelText: "Full Name"),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: ageController,
+                  decoration: const InputDecoration(labelText: "Age"),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: addressController,
+                  decoration: const InputDecoration(labelText: "Address"),
+                ),
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      setState(() {
+                        isUploading = true;
+                      });
+                      await _confirmBooking();
+                    },
+                    child: isUploading
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : const Text("Confirm Booking"),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -434,31 +694,24 @@ class _BookingFormPageState extends State<BookingFormPage> {
   }
 }
 
-
-
-
-
-
-
-
-
-
-
 class ReservationStatusPage extends StatelessWidget {
   const ReservationStatusPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final String? userId = FirebaseAuth.instance.currentUser?.uid; // Get logged-in user ID
+    final String? userId = FirebaseAuth.instance.currentUser?.uid;
 
     if (userId == null) {
       return Scaffold(
         appBar: AppBar(
           title: const Text("Reservation Status"),
-          backgroundColor: Color(0xFF0059FF),
+          backgroundColor: const Color.fromARGB(255, 255, 255, 255),
         ),
         body: const Center(
-          child: Text("Please log in to view reservations."),
+          child: Text(
+            "Please log in to view reservations.",
+            style: TextStyle(color: Colors.black87),
+          ),
         ),
       );
     }
@@ -466,23 +719,31 @@ class ReservationStatusPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Reservation Status"),
-        backgroundColor: Color(0xFF0059FF),
+        backgroundColor: const Color.fromARGB(255, 0, 0, 0),
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('bookings')
-            .where('userId', isEqualTo: userId) // Filter reservations by logged-in user
+            .where('userId', isEqualTo: userId)
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+              child: CircularProgressIndicator(
+                color: Colors.black,
+              ),
+            );
           }
 
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
             return const Center(
               child: Text(
                 "No reservations found.",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
               ),
             );
           }
@@ -497,9 +758,10 @@ class ReservationStatusPage extends StatelessWidget {
 
               return Card(
                 margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                elevation: 5,
+                elevation: 3,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
+                  side: const BorderSide(color: Colors.black12),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -508,93 +770,40 @@ class ReservationStatusPage extends StatelessWidget {
                     children: [
                       Row(
                         children: [
-                          const Icon(Icons.person, color: Color(0xFF0084FF), size: 24),
+                          const Icon(Icons.person, color: Colors.black87, size: 24),
                           const SizedBox(width: 8),
                           Text(
                             data['userName'] ?? 'N/A',
                             style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
+                              color: Colors.black,
                             ),
                           ),
                         ],
                       ),
                       const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          const Icon(Icons.home, color: Color(0xFF0084FF), size: 24),
-                          const SizedBox(width: 8),
-                          Text(
-                            "Address: ${data['userAddress'] ?? 'N/A'}",
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                        ],
+                      _buildInfoRow(Icons.home, "Address: ${data['userAddress'] ?? 'N/A'}"),
+                      _buildInfoRow(Icons.room, "Room No: ${data['roomNo'] ?? 'N/A'}"),
+                      _buildInfoRow(Icons.hotel, "Room Type: ${data['roomType'] ?? 'N/A'}"),
+                      _buildInfoRow(Icons.calendar_today, "Duration: ${data['duration'] ?? 0} days"),
+                      _buildInfoRow(Icons.attach_money, "Price per Day: ₹${data['price'] ?? 'N/A'}"),
+                      _buildInfoRow(
+                        Icons.money,
+                        "Total Price: ₹${data['totalPrice'] ?? 'N/A'}",
+                        isBold: true,
                       ),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          const Icon(Icons.room, color: Color(0xFF0084FF), size: 24),
-                          const SizedBox(width: 8),
-                          Text(
-                            "Room No: ${data['roomNo'] ?? 'N/A'}",
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          const Icon(Icons.hotel, color: Color(0xFF0084FF), size: 24),
-                          const SizedBox(width: 8),
-                          Text(
-                            "Room Type: ${data['roomType'] ?? 'N/A'}",
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          const Icon(Icons.calendar_today, color: Color(0xFF0084FF), size: 24),
-                          const SizedBox(width: 8),
-                          Text(
-                            "Duration: ${data['duration'] ?? 0} days",
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          const Icon(Icons.attach_money, color: Color(0xFF0084FF), size: 24),
-                          const SizedBox(width: 8),
-                          Text(
-                            "Price per Day: ₹${data['price'] ?? 'N/A'}",
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          const Icon(Icons.money, color: Color(0xFF0084FF), size: 24),
-                          const SizedBox(width: 8),
-                          Text(
-                            "Total Price: ₹${data['totalPrice'] ?? 'N/A'}",
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const Divider(height: 24, color: Colors.grey),
+                      const Divider(height: 24, color: Colors.black26),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           const Text(
                             "Status:",
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
                           ),
                           _buildStatusChip(data['status']),
                         ],
@@ -604,25 +813,25 @@ class ReservationStatusPage extends StatelessWidget {
                         width: double.infinity,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFF0084FF),
+                            backgroundColor: Colors.black,
+                            foregroundColor: Colors.white,
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
                           ),
-                        onPressed: () {
-  final String roomNo = data['roomNo'] ?? 'N/A';
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => ServicesPage(selectedRoomNumber: roomNo), // Pass room number correctly
-    ),
-  );
-},
-
+                          onPressed: () {
+                            final String roomNo = data['roomNo'] ?? 'N/A';
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ServicesPage(selectedRoomNumber: roomNo),
+                              ),
+                            );
+                          },
                           child: const Text(
                             "Request a Service",
-                            style: TextStyle(color: Colors.white, fontSize: 16),
+                            style: TextStyle(fontSize: 16),
                           ),
                         ),
                       ),
@@ -637,167 +846,19 @@ class ReservationStatusPage extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusChip(String? status) {
-    Color chipColor = Colors.grey;
-    String statusText = status ?? "Pending";
-
-    switch (statusText.toLowerCase()) {
-      case "confirmed":
-        chipColor = Colors.green;
-        break;
-      case "pending":
-        chipColor = Colors.orange;
-        break;
-      case "cancelled":
-        chipColor = Colors.red;
-        break;
-    }
-
-    return Chip(
-      label: Text(
-        statusText.toUpperCase(),
-        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-      ),
-      backgroundColor: chipColor,
-    );
-  }
-}
-
-// ServicesPage
-
-
-
-class ServiceRequestPage extends StatefulWidget {
-  const ServiceRequestPage({Key? key}) : super(key: key);
-
-  @override
-  _ServiceRequestPageState createState() => _ServiceRequestPageState();
-}
-
-class _ServiceRequestPageState extends State<ServiceRequestPage> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[100],
-      appBar: AppBar(
-        title: const Text("Service Requests"),
-        backgroundColor: Colors.indigo,
-        elevation: 0,
-      ),
-      body: Column(
+  Widget _buildInfoRow(IconData icon, String text, {bool isBold = false}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: Row(
         children: [
-          // Header Section
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Colors.blue.shade400, Colors.indigo.shade700],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: const BorderRadius.only(
-                bottomLeft: Radius.circular(20),
-                bottomRight: Radius.circular(20),
-              ),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                Text(
-                  "Manage Service Requests",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                SizedBox(height: 5),
-                Text(
-                  "Monitor and update service requests efficiently.",
-                  style: TextStyle(fontSize: 14, color: Colors.white70),
-                ),
-              ],
-            ),
-          ),
-
-          // Requests List
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection('service_requests')
-                    .orderBy('timestamp', descending: true)
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-
-                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                    return const Center(
-                      child: Text(
-                        "No service requests found.",
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                    );
-                  }
-
-                  final requests = snapshot.data!.docs;
-
-                  return ListView.builder(
-                    itemCount: requests.length,
-                    itemBuilder: (context, index) {
-                      final request = requests[index];
-                      final data = request.data() as Map<String, dynamic>;
-
-                      String roomNumber = data['roomNumber'] ?? 'Unknown Room';
-                      String serviceType = data['serviceType'] ?? 'Unknown Service';
-                      String details = data['details'] ?? 'No details provided';
-                      String status = data['status'] ?? 'Pending';
-
-                      return Card(
-                        margin: const EdgeInsets.symmetric(vertical: 8),
-                        elevation: 4,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: ListTile(
-                          contentPadding: const EdgeInsets.all(12),
-                          leading: Icon(
-                            Icons.room_service,
-                            color: Colors.blue.shade700,
-                            size: 30,
-                          ),
-                          title: Text(
-                            'Room $roomNumber - $serviceType',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(height: 5),
-                              Text('Details: $details'),
-                              const SizedBox(height: 5),
-                              _buildStatusBadge(status),
-                            ],
-                          ),
-                          trailing: IconButton(
-                            icon: const Icon(Icons.edit, color: Colors.blue),
-                            onPressed: () async {
-                              await _updateStatusDialog(context, request.id, status);
-                            },
-                          ),
-                        ),
-                      );
-                    },
-                  );
-                },
-              ),
+          Icon(icon, color: Colors.black54, size: 24),
+          const SizedBox(width: 8),
+          Text(
+            text,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+              color: Colors.black87,
             ),
           ),
         ],
@@ -805,106 +866,37 @@ class _ServiceRequestPageState extends State<ServiceRequestPage> {
     );
   }
 
-  // Status Badge Widget
-  Widget _buildStatusBadge(String status) {
-    Color badgeColor;
-    switch (status) {
-      case 'In Progress':
-        badgeColor = Colors.orange;
+  Widget _buildStatusChip(String? status) {
+    Color chipColor;
+    String statusText = status ?? "Pending";
+
+    switch (statusText.toLowerCase()) {
+      case "confirmed":
+        chipColor = Colors.black87;
         break;
-      case 'Completed':
-        badgeColor = Colors.green;
+      case "pending":
+        chipColor = Colors.black54;
+        break;
+      case "cancelled":
+        chipColor = Colors.black38;
         break;
       default:
-        badgeColor = Colors.red;
+        chipColor = Colors.black26;
     }
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(
-        color: badgeColor.withOpacity(0.2),
-        borderRadius: BorderRadius.circular(12),
+    return Chip(
+      label: Text(
+        statusText.toUpperCase(),
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+        ),
       ),
-      child: Text(
-        status,
-        style: TextStyle(color: badgeColor, fontWeight: FontWeight.bold),
-      ),
+      backgroundColor: chipColor,
     );
-  }
-
-  // Dialog to update the status of a service request
-  Future<void> _updateStatusDialog(BuildContext context, String requestId, String currentStatus) async {
-    String newStatus = currentStatus;
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-          title: const Text('Update Service Request Status'),
-          content: StatefulBuilder(
-            builder: (context, setState) {
-              return DropdownButtonFormField<String>(
-                value: currentStatus,
-                decoration: InputDecoration(
-                  labelText: 'Select Status',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                ),
-                items: const [
-                  DropdownMenuItem(value: 'Pending', child: Text('Pending')),
-                  DropdownMenuItem(value: 'In Progress', child: Text('In Progress')),
-                  DropdownMenuItem(value: 'Completed', child: Text('Completed')),
-                ],
-                onChanged: (value) {
-                  setState(() {
-                    newStatus = value ?? currentStatus;
-                  });
-                },
-              );
-            },
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel', style: TextStyle(color: Colors.red)),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                if (newStatus.isNotEmpty) {
-                  await _updateStatus(requestId, newStatus);
-                  Navigator.of(context).pop();
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Please select a valid status.')),
-                  );
-                }
-              },
-              child: const Text('Update'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  // Function to update the status in Firestore
-  Future<void> _updateStatus(String requestId, String status) async {
-    try {
-      await FirebaseFirestore.instance.collection('service_requests').doc(requestId).update({
-        'status': status,
-        'timestamp': FieldValue.serverTimestamp(),
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Status updated to: $status')),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error updating status: $e')),
-      );
-    }
   }
 }
+// ServicesPage
        
 
 
@@ -969,7 +961,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
       backgroundColor: Colors.grey[100], // Light background
       appBar: AppBar(
         title: const Text("Feedback"),
-        backgroundColor: Colors.indigo,
+        backgroundColor: const Color.fromARGB(255, 0, 0, 0),
         elevation: 0,
       ),
       body: SingleChildScrollView(
@@ -983,7 +975,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [Colors.blue.shade400, Colors.indigo.shade700],
+                    colors: [const Color.fromARGB(255, 0, 0, 0), Colors.indigo.shade700],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -1042,7 +1034,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
                   onPressed: isSubmitting ? null : _submitFeedback,
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 14),
-                    backgroundColor: Colors.blue.shade600,
+                    backgroundColor: const Color.fromARGB(255, 0, 0, 0),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),

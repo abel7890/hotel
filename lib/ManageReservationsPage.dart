@@ -12,10 +12,10 @@ class _ManageReservationsPageState extends State<ManageReservationsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200], // Light background
+      backgroundColor: const Color.fromARGB(255, 18, 18, 18), // Light background
       appBar: AppBar(
         title: const Text("Manage Reservations"),
-        backgroundColor: Colors.brown[700], // Dark Brown Theme
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255), // Dark Brown Theme
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -101,12 +101,12 @@ class _ManageReservationsPageState extends State<ManageReservationsPage> {
                                 child: Container(
                                   padding: const EdgeInsets.all(8),
                                   decoration: BoxDecoration(
-                                    color: Colors.blue[100],
+                                    color: const Color.fromARGB(255, 0, 0, 0),
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: Text(
                                     "Room No: ${data['roomNo'] ?? 'Not Assigned'}",
-                                    style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
+                                    style: const TextStyle(fontWeight: FontWeight.bold, color: Color.fromARGB(255, 255, 255, 255)),
                                   ),
                                 ),
                               ),
@@ -119,7 +119,7 @@ class _ManageReservationsPageState extends State<ManageReservationsPage> {
                           icon: const Icon(Icons.info, size: 18),
                           label: const Text("Review"),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.brown,
+                            backgroundColor: const Color.fromARGB(255, 0, 0, 0),
                             foregroundColor: Colors.white,
                           ),
                         ),
@@ -135,7 +135,7 @@ class _ManageReservationsPageState extends State<ManageReservationsPage> {
     );
   }
 
-  void _showDetailsDialog(BuildContext context, DocumentSnapshot reservation, String idProofUrl) {
+ void _showDetailsDialog(BuildContext context, DocumentSnapshot reservation, String idProofUrl) {
     final data = reservation.data() as Map<String, dynamic>;
 
     final userName = data['userName'] ?? 'N/A';
@@ -146,6 +146,7 @@ class _ManageReservationsPageState extends State<ManageReservationsPage> {
     final price = data['price']?.toString() ?? 'N/A';
     final totalPrice = data['totalPrice']?.toString() ?? 'N/A';
     final roomNo = data['roomNo'] ?? '';
+    final checkInDate = data['checkInDate'] ?? 'N/A';
 
     TextEditingController roomNoController = TextEditingController(text: roomNo);
     bool isApproved = data['status'] == 'Approved';
@@ -175,8 +176,11 @@ class _ManageReservationsPageState extends State<ManageReservationsPage> {
                 Text("Price per Day: ₹$price"),
                 const SizedBox(height: 8),
                 Text("Total Price: ₹$totalPrice"),
+                const SizedBox(height: 8),
+                Text("Check-In Date: $checkInDate"),
                 const SizedBox(height: 12),
-              
+        
+
                 if (isApproved)
                   TextField(
                     controller: roomNoController,

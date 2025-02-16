@@ -14,7 +14,7 @@ class _ServiceRequestPageState extends State<ServiceRequestPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Service Requests"),
-        backgroundColor: Colors.teal, // Custom background color for the AppBar
+        backgroundColor: const Color.fromARGB(255, 130, 130, 130), // Custom background color for the AppBar
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -54,7 +54,7 @@ class _ServiceRequestPageState extends State<ServiceRequestPage> {
                     contentPadding: const EdgeInsets.all(16.0),
                     leading: Icon(
                       Icons.room_service,
-                      color: Colors.teal,
+                      color: const Color.fromARGB(255, 0, 0, 0),
                       size: 40,
                     ),
                     title: Text(
@@ -62,7 +62,7 @@ class _ServiceRequestPageState extends State<ServiceRequestPage> {
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: Colors.teal,
+                        color: Color.fromARGB(255, 0, 0, 0),
                       ),
                     ),
                     subtitle: Column(
@@ -130,7 +130,7 @@ class _ServiceRequestPageState extends State<ServiceRequestPage> {
                 }
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.teal, // Button color
+                backgroundColor: const Color.fromARGB(255, 0, 0, 0), // Button color
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),

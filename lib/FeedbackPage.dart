@@ -7,13 +7,13 @@ class FeedbackPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200], // Light background color
+      backgroundColor: const Color.fromARGB(255, 83, 83, 83), // Light background color
       appBar: AppBar(
         title: const Text(
           'Manage Feedback',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        backgroundColor: Colors.brown[700], // Dark brown theme
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255), // Dark brown theme
         elevation: 4,
       ),
       body: Padding(
@@ -80,7 +80,7 @@ class FeedbackPage extends StatelessWidget {
                     elevation: 3,
                     child: ListTile(
                       leading: CircleAvatar(
-                        backgroundColor: Colors.brown[400],
+                        backgroundColor: const Color.fromARGB(255, 0, 0, 0),
                         child: Text(
                           username[0].toUpperCase(),
                           style: const TextStyle(fontSize: 18, color: Colors.white),

@@ -36,10 +36,10 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100], // Light background
+      backgroundColor: const Color.fromARGB(255, 119, 117, 117), // Light background
       appBar: AppBar(
         title: const Text("Admin Dashboard"),
-        backgroundColor: Colors.indigo,
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
         elevation: 0,
         actions: [
           IconButton(
@@ -78,7 +78,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                 stream: FirebaseFirestore.instance.collection('feedback').snapshots(),
                 builder: (context, snapshot) {
                   int feedbackCount = snapshot.hasData ? snapshot.data!.docs.length : 0;
-                  return _buildStatCard("Feedback Received", feedbackCount, Colors.orange, Icons.feedback);
+                  return _buildStatCard("Feedback Received", feedbackCount, const Color.fromARGB(255, 0, 0, 0), Icons.feedback);
                 },
               ),
 
@@ -111,11 +111,11 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
             accountEmail: Text(userEmail),
             currentAccountPicture: const CircleAvatar(
               backgroundColor: Colors.white,
-              child: Icon(Icons.admin_panel_settings, size: 40, color: Colors.blue),
+              child: Icon(Icons.admin_panel_settings, size: 40, color: Color.fromARGB(255, 112, 112, 112)),
             ),
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors: [Colors.blue, Colors.indigo],
+                colors: [Color.fromARGB(255, 0, 0, 0), Color.fromARGB(255, 0, 0, 0)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -139,7 +139,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
 
   Widget _buildDrawerItem(IconData icon, String title, Widget page) {
     return ListTile(
-      leading: Icon(icon, color: Colors.blue),
+      leading: Icon(icon, color: const Color.fromARGB(255, 0, 0, 0)),
       title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
       onTap: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) => page));
@@ -185,13 +185,11 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
       margin: const EdgeInsets.symmetric(vertical: 8),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: Colors.blue.shade100,
-          child: Icon(icon, color: Colors.blue.shade700),
+          backgroundColor: const Color.fromARGB(255, 142, 142, 142),
+          child: Icon(icon, color: const Color.fromARGB(255, 0, 0, 0)),
         ),
         title: Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
         subtitle: Text(description, style: const TextStyle(fontSize: 14, color: Colors.black54)),
-        trailing: const Icon(Icons.arrow_forward_ios, size: 18, color: Colors.blue),
-        onTap: () {},
       ),
     );
   }

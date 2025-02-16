@@ -24,7 +24,8 @@ class _ServicesPageState extends State<ServicesPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Services"),
-        backgroundColor: Colors.indigo,
+
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255)
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

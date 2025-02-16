@@ -134,7 +134,7 @@ class _AddRoomState extends State<AddRoom> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Add Room'),
-        backgroundColor: const Color.fromARGB(255, 54, 54, 123),
+        backgroundColor: const Color.fromARGB(255, 92, 92, 92),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -201,8 +201,8 @@ class _AddRoomState extends State<AddRoom> {
                   icon: const Icon(Icons.upload),
                   label: const Text('Upload Room Image'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.indigo,
-                    foregroundColor: Colors.white,
+                    backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+                    foregroundColor: const Color.fromARGB(255, 0, 0, 0),
                   ),
                 ),
                 if (_webSelectedImage != null)
@@ -221,7 +221,7 @@ class _AddRoomState extends State<AddRoom> {
                   child: const Text('Add Room'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
-                    foregroundColor: Colors.white,
+                    foregroundColor: const Color.fromARGB(255, 0, 0, 0),
                     padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 12.0),
                   ),
                 ),
